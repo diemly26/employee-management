@@ -1,15 +1,19 @@
 package com.intern.employeemanagement.controller;
 
+import com.intern.employeemanagement.dto.DepartmentStatDTO;
+import com.intern.employeemanagement.service.EmployeeService;
 import com.intern.employeemanagement.service.ReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.intern.employeemanagement.model.Employee;
 import com.intern.employeemanagement.repository.DepartmentRepository;
 import com.intern.employeemanagement.repository.EmployeeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.intern.employeemanagement.exception.ResourceNotFoundException;
 import jakarta.validation.Valid;
+import org.springframework.ui.Model;
 
 import java.util.List;
 
@@ -21,6 +25,8 @@ public class EmployeeController {
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
     private final ReportService reportService;
+    @Autowired
+    private EmployeeService employeeService;
 
     public EmployeeController(EmployeeRepository employeeRepository,
                               DepartmentRepository departmentRepository,
