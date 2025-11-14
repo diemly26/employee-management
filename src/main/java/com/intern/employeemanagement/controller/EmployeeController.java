@@ -1,43 +1,36 @@
 package com.intern.employeemanagement.controller;
 
+import com.intern.employeemanagement.model.Department;
 import com.intern.employeemanagement.model.Employee;
+import com.intern.employeemanagement.repository.DepartmentRepository;
+import com.intern.employeemanagement.repository.EmployeeRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/employees")
 public class EmployeeController {
-    private List<Employee> employees = new ArrayList<>();
 
-    public EmployeeController() {
-        employees.add(new Employee(1, "Alice Johnson", "alice@gmail.com"));
-        employees.add(new Employee(2, "Bob Smith", "bobsm@gmail.com"));
+    private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
+
+    public EmployeeController(EmployeeRepository employeeRepository, DepartmentRepository departmentRepository) {
+        this.employeeRepository = employeeRepository;
+        this.departmentRepository = departmentRepository;
     }
     @GetMapping
-    public ResponseEntity<List<Employee>> getAllEmployees() {
-        return ResponseEntity.ok(employees);
+    public ResponseEntity<List<Employee>> getAllEmployees(@RequestParam(required = false) Long deptId) {
+        if(deptId != null){
+            return ResponseEntity.ok(employeeRepository.findByDepartmentId(deptId));
+        }
+        return ResponseEntity.ok(employeeRepository.findAll());
     }
 
     @PostMapping
     public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
-        int newId = employees.size() + 1;
-        employee.setId(newId);
-
-        employees.add(employee);
-
-        return ResponseEntity.status(201).body(employee);
+        return ResponseEntity.ok(employeeRepository.save(employee));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable int id) {
-        for (Employee emp : employees) {
-            if (emp.getId() == id) {
-                return ResponseEntity.ok(emp);
-            }
-        }
-        return ResponseEntity.notFound().build();
-    }
 }
