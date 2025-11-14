@@ -1,6 +1,7 @@
 package com.intern.employeemanagement.controller;
 
-import com.intern.employeemanagement.model.Department;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.intern.employeemanagement.model.Employee;
 import com.intern.employeemanagement.repository.DepartmentRepository;
 import com.intern.employeemanagement.repository.EmployeeRepository;
@@ -15,6 +16,7 @@ import java.util.List;
 @RequestMapping("/employees")
 public class EmployeeController {
 
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
 
@@ -24,6 +26,7 @@ public class EmployeeController {
     }
     @GetMapping
     public ResponseEntity<List<Employee>> getAllEmployees(@RequestParam(required = false) Long deptId) {
+        logger.info("Request lấy danh sách nhân viên. DeptId: {}", deptId);
         if(deptId != null){
             return ResponseEntity.ok(employeeRepository.findByDepartmentId(deptId));
         }
@@ -32,6 +35,7 @@ public class EmployeeController {
 
     @PostMapping
     public ResponseEntity<Employee> createEmployee(@Valid @RequestBody Employee employee) {
+        logger.info("Request tạo nhân viên mới: {}", employee.getEmail());
         return ResponseEntity.ok(employeeRepository.save(employee));
     }
 
@@ -39,6 +43,7 @@ public class EmployeeController {
     public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No employee was found with ID: " + id));
+        logger.info("Request lấy nhân viên. Id: {}", id);
         return ResponseEntity.ok(employee);
     }
 
@@ -48,6 +53,7 @@ public class EmployeeController {
                 .orElseThrow(() -> new ResourceNotFoundException("No employee was found with ID: " + id));
 
         employeeRepository.delete(employee);
+        logger.info("Request xoá nhân viên. Id: {}", id);
         return ResponseEntity.ok("Delete successfully with ID: " + id);
     }
 
