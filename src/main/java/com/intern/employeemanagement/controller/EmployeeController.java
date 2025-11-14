@@ -1,5 +1,6 @@
 package com.intern.employeemanagement.controller;
 
+import com.intern.employeemanagement.service.ReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.intern.employeemanagement.model.Employee;
@@ -19,10 +20,14 @@ public class EmployeeController {
     private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
+    private final ReportService reportService;
 
-    public EmployeeController(EmployeeRepository employeeRepository, DepartmentRepository departmentRepository) {
+    public EmployeeController(EmployeeRepository employeeRepository,
+                              DepartmentRepository departmentRepository,
+                              ReportService reportService) {
         this.employeeRepository = employeeRepository;
         this.departmentRepository = departmentRepository;
+        this.reportService = reportService;
     }
     @GetMapping
     public ResponseEntity<List<Employee>> getAllEmployees(@RequestParam(required = false) Long deptId) {
@@ -36,6 +41,7 @@ public class EmployeeController {
     @PostMapping
     public ResponseEntity<Employee> createEmployee(@Valid @RequestBody Employee employee) {
         logger.info("Request tạo nhân viên mới: {}", employee.getEmail());
+        reportService.clearCache();
         return ResponseEntity.ok(employeeRepository.save(employee));
     }
 
@@ -57,4 +63,8 @@ public class EmployeeController {
         return ResponseEntity.ok("Delete successfully with ID: " + id);
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<Long> countEmployees() {
+        return ResponseEntity.ok(reportService.getTotalEmployees());
+    }
 }
